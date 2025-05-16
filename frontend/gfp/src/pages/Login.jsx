@@ -6,6 +6,7 @@ export default function Login() {
 
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const [lembrar,setLembrar] = useState('');
 
 
     async function botaoEntrar(e) {
@@ -30,7 +31,7 @@ export default function Login() {
             if (resposta.ok) {
                 const dados = await resposta.json();
                 setMensagem(`Login bem sucedido!`)
-                localStorage.setItem('UsuarioLogado', JSON.stringify(dados))
+                localStorage.setItem('UsuarioLogado', JSON.stringify(...dados,lembrar))
             } else {
                 setMensagem('Email ou senha incorretos ❌')
                 throw new Error('Email ou senha incorretos ❌')
@@ -41,12 +42,29 @@ export default function Login() {
             return;
         }
     }
+    <div>
+        <input type="text" />
+    </div>
 
     function botaoLimpar() {
         setEmail('');
         setSenha('');
         setMensagem('');
     }
+
+    useEffect(() => {
+            const buscarUsuario = async () =>{
+                const UsuarioLogado = await localStorage.getItem('UsuarioLogado')
+            if(UsuarioLogado) {
+                setUsuario(JSON.parse(UsuarioLogado));
+            }else {
+                navigate('/')
+            }
+        };
+        buscarUsuario();
+        }, [])
+
+
     return (
         <div style={estilos.container}>
             <img style={{height: '100px'}} src= 'https://upload.wikimedia.org/wikipedia/commons/8/8c/SENAI_S%C3%A3o_Paulo_logo.png' alt="Logo SENAI" className="logo" />
@@ -62,6 +80,11 @@ export default function Login() {
             <input style={{height: '40px', marginTop: '10px', width: '30%', borderRadius: '10px'}} type="password" placeholder="digite sua senha"
                 onChange={(e) => setSenha(e.target.value)}
                 value={senha} />
+                <label className="login">
+                    <input type="checkbox" onChange={() => setLembrar(!lembrar)} />
+                    Lembrar-me
+
+                </label>
             <div style={estilos.containerbotoes}>           
                 <button style={estilos.botoes} onClick={() => navigate("/principal")}>Entrar</button>
             </div>
