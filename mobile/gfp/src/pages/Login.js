@@ -13,11 +13,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { enderecoServidor } from '../utils';
 import Estilos_Login from '../styles/Estilos_Login';
 import Estilos, { corPrincipal, corSecundaria, corFundo, corFundo2, corTextos, corTextos2 } from '../styles/Estilos';
-import MenuDrawer from './MenuDrawer';
 
 const Login = ({ navigation }) => {
-    const [email, setEmail] = useState('vivi.eduarda@gmail.com');
-    const [senha, setSenha] = useState('1234');
+    const [email, setEmail] = useState('vitoria@.com');
+    const [senha, setSenha] = useState('123');
     const [showPassword, setShowPassword] = useState(false);
     const [isActive, setIsActive] = useState(false);
     const [lembrar,setLembrar] = useState(false)
@@ -37,7 +36,7 @@ const Login = ({ navigation }) => {
     const botaoLogin = async () => {
 
         try {
-            if (email == '' || senha == '') {
+            if (email === '' || senha === '') {
                 throw new Error('Preencha todos os campos');
             }
             //autenticando utilizando a API de backend com o fetch e recebendo o token

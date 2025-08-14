@@ -7,14 +7,21 @@ import RotasContas from './routes/rotasContas.js'
 import rotasTransacao from './routes/rotasTransacao.js';
 import rotasSubCategorias from './routes/rotasSubCategorias.js';
 
+
+import swaggerUI from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
+
+
 const app = express(); //criar instancia do express
 
 testarConexao();
 app.use(cors());
 app.use(express.json())
 
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
+
 app.get('/',(req,res)=>{
-    res.send('API funcionando')
+    res.redirect('/api-docs')
 })
 
 //Rotas
@@ -27,7 +34,7 @@ app.delete('/usuarios/:id_usuario',autenticarToken,rotasUsuarios.deletar)
 
 
 //Rotas categorias
-app.post('/categoria', autenticarToken, rotasCategorias.novaCategoria)
+app.post('/categorias', autenticarToken, rotasCategorias.novaCategoria)
 app.get('/categorias/filtrarCategoria', rotasCategorias.filtrarCategoria)
 app.get('/categorias', rotasCategorias.listar)
 app.get('/categorias/:id_categoria', rotasCategorias.consultarPorId)
@@ -49,13 +56,13 @@ app.delete('/categorias/:id_categoria', rotasCategorias.desativar)
 // //Rota Contas
 // app.get('/contas/filtrarConta',rotasContas.filtrarNome)
 // app.post('/contas/', rotasContas.novoContas)
-// app.get('/contas/', rotasContas.listarContas)
+app.get('/contas', RotasContas.ListarTodas)
 // // app.get('/contas/', rotasContas.buscarporID)
 
 // Rotas contas
 app.get('/contas/filtrarNome', RotasContas.filtrarNome)
 app.post('/contas', RotasContas.NovasContas)
-app.get('/contas',autenticarToken. RotasContas.ListarTodas)
+// app.get('/contas',autenticarToken. RotasContas.ListarTodas)
 app.get('/contas/:id', RotasContas.BuscarId)
 app.patch('/contas/:id', RotasContas.AtualizarContas)
 app.put('/contas/:id', RotasContas.atualizarTodosCampos)

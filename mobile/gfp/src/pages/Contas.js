@@ -4,13 +4,19 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Estilos, { corPrincipal } from '../styles/Estilos';
 import {enderecoServidor} from '../utils';
+import { IsFocused, useIsFocused } from '@react-navigation/native';
+
 
 export default function Contas({navigation}) {
     const [dadosLista, setDadosLista] = useState([]);
     const [usuario, setUsuario] = useState([]);
 
+    //Hook para verificar se a tela está em foco, visível para ver 
+    const IsFocused = useIsFocused()
+
     const buscarDadosAPI = async () => {
         try {
+            console.log('usuario', usuario)
             const resposta = await fetch(`${enderecoServidor}/contas`,{
                 method: 'GET',
                 headers: {
@@ -26,42 +32,42 @@ export default function Contas({navigation}) {
         }
     }
     useEffect(() => {
-        buscarUsuarioLogado()
-        ;
+        buscarUsuarioLogado();
     }, [])
 
      useEffect(() => {
         buscarDadosAPI()
-    }, [usuario])
+    }, [usuario, IsFocused])
 
-          const UsuarioLogado = async () =>{
+          const buscarUsuarioLogado = async () =>{
         const usuarioLogado = await AsyncStorage.getItem('UsuarioLogado')
-            if(UsuarioLogado){
-                setUsuario(JSON.parse(UsuarioLogado));
+            if(usuarioLogado){
+                setUsuario(JSON.parse(usuarioLogado));
             } else {
-                navigation.nagate('Login')
+                navigation.navigate('Login')
             }
         }
-    const botaoLogout =() =>{
-        AsyncStorage.removeItem('UsuarioLogado');
-        navigation.navigate('Login');
-    }
+    // const botaoLogout =() =>{
+    //     AsyncStorage.removeItem('UsuarioLogado');
+    //     navigation.navigate('Login');
+    // }
 
-    const botaoExcluir = async (id) = () =>{
+    const botaoExcluir = async (id)  =>{
         try{
-            const resposta = await.fetch(`${enderecoServidor}/contas/${id}`,{
+            const resposta = await fetch(`${enderecoServidor}/contas/${id}`,{
                 method: 'DELETE',
                 headers: {
-                    'Autorization': `Bearer${usuario.token}`
+                    'Authorization': `Bearer${usuario.token}`
                 }
             });
+             if (resposta.ok) {
+                buscarDadosAPI();
+             }
 
         }catch(error){
             console.error('Erro ao excluir:',error)
         }
     }
-
-
 
     const exibirItemLista = ({item}) => {
         return (
@@ -72,7 +78,9 @@ export default function Contas({navigation}) {
                     <Text>{item.tipo_conta}</Text>
                     <Text style={Estilos.nomeLista}>{item.nome}</Text>
                 </View>
-                <MaterialIcons name='edit' size={24} color={corPrincipal} />
+                <MaterialIcons name='edit' size={24} color={corPrincipal}
+                    onPress={() => navigation.navigate('CadContas', {conta: item})}
+                />
                 <MaterialIcons name='delete' size={24} color={corPrincipal} 
                 onPress={() => botaoExcluir (item.id_conta)}
                 />
@@ -80,10 +88,20 @@ export default function Contas({navigation}) {
         )
     }
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.navigate('CadContas')}>
+                    <MaterialIcons name="add" size={28} color="#fff"  
+                        style={{marginRight: 15}} />                    
+                </TouchableOpacity>
+            )
+        })
+    }, [navigation])
+
     return (
         <View style={Estilos.conteudoHeader}>
             <View style={Estilos.conteudoCorpo}>
-                <Text>Contas</Text>
                 <FlatList 
                     data={dadosLista}
                     renderItem={exibirItemLista}

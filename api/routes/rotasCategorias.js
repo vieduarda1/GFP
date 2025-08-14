@@ -2,21 +2,23 @@ import { BD } from '../db.js'
 
 
 class rotasCategorias {
-    static async novaCategoria(req, res) {
-        const { nome, tipo_transacao, gasto_fixo, id_usuario } = req.body;
-
+    static async novaCategoria(req,res) {
+        const { nome, tipo_transacao, gasto_fixo, id_usuario, cor, icone } = req.body;
         try {
-            const categoria = await BD.query(`
-                    INSERT INTO categorias(nome, tipo_transacao, gasto_fixo,id_usuario)
-                    VALUES($1, $2, $3,$4) RETURNING *`,
-                [nome, tipo_transacao, gasto_fixo, id_usuario])
+            const categoria = await BD.query(`INSERT INTO categorias (nome, tipo_transacao, gasto_fixo, id_usuario, cor, icone)
+                VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`, [nome, tipo_transacao, gasto_fixo, id_usuario, cor, icone]);
 
-            res.status(201).json("Categoria Cadastrada com sucesso✔")
+            if (categoria.rows.length === 0) {
+                    return res.status(404).json({ error: "Categoria não encontrada" });
+                }
+            res.status(201).json('Categoria criada com sucesso!');
         } catch (error) {
-            console.error('Erro ao criar categoria', error);
-            res.status(500).json({ message: 'Erro ao criar', error: error.message })
+            console.error("Erro ao criar a categoria:", error);
+            res.status(500).json({ error: "Erro ao criar a categoria" });
         }
     }
+
+
 
     //filtrar por tipo de categoria
     static async filtrarCategoria(req, res) {
@@ -39,7 +41,7 @@ class rotasCategorias {
 
     static async listar(req, res) {
         try {
-            const categorias = await BD.query('SELECT * FROM categorias');
+            const categorias = await BD.query('SELECT * FROM categorias where ativo = true ORDER BY nome');
             res.status(200).json(categorias.rows);
         } catch (error) {
             res.status(500).json({
@@ -126,8 +128,8 @@ class rotasCategorias {
     static async desativar(req, res) {
         const { id_categoria } = req.params;
         try {
-            const categoria = await db.query(
-                'UPDATE categorias SET ativo = FALSE WHERE id_categoria = $1 RETURNING *',
+            const categoria = await BD.query(
+                'UPDATE categorias SET ativo = false WHERE id_categoria = $1 RETURNING *',
                 [id_categoria]);
             res.json({ mensagem: 'Categoria desativado com sucesso.', categoria: categoria.rows[0] });
         } catch (erro) {
