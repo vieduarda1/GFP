@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect, useContext } from 'react';
 import { UsuarioContext } from '../UsuarioContext'
 import { enderecoServidor } from '../utils'
-import { MdAdd, MdEdit, MdDelete, MdCreditCard,MdAccountBalance, MdMail, MdFeaturedPlayList, MdAttachMoney, MdAutoGraph } from 'react-icons/md';
+import { MdAdd, MdEdit, MdDelete, MdCreditCard, MdAccountBalance, MdEmail, MdFeaturedPlayList, MdAttachMoney, MdAutoGraph } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom'
 import Estilos from '../styles/Estilos'
 
@@ -11,25 +12,22 @@ export default function Contas() {
 
     const navigate = useNavigate();
 
-    const iconsTipoConta ={
-        'CONTA_CORRENTE': <MdAccountBalance className = "w-6 h-3" />,
-        'POUPANCA': <MdMail className = "w-6 h-3" />,
-        'CARTAO_CREDITO': <MdCreditCard className = "w-6 h-3" />,
-        'CARTAO_DEBITO': <MdFeaturedPlayList className = "w-6 h-3" />,
-        'DINHEIRO': <MdAttachMoney className = "w-6 h-3" />,
-        'INSVESTIMENTO': <MdAutoGraph className = "w-6 h-3" />,
-
+    const iconesTipoConta = {
+        'CONTA_CORRENTE': <MdAccountBalance className="w-6 h-6" />,
+        'POUPANCA': <MdEmail className="w-6 h-6" />,
+        'CARTÃO_CREDITO': <MdCreditCard className="w-6 h-6" />,
+        'CARTAO_DEBITO': <MdFeaturedPlayList className="w-6 h-6" />,
+        'DINHEIRO': <MdAttachMoney className="w-6 h-6" />,
+        'INVESTIMENTO': <MdAutoGraph className="w-6 h-6" />,
     }
 
-    
-    const nomesTipoConta ={
-        'CONTA_CORRENTE': 'Conta Correte',
-        'POUPANCA': 'Poupança' ,
-        'CARTAO_CREDITO': 'Cartao Credito',
-        'CARTAO_DEBITO': 'Cartao Debito',
+    const nomesTipoConta = {
+        'CONTA_CORRENTE': 'Conta Corrente',
+        'POUPANCA': 'Poupança',
+        'CARTÃO_CREDITO': 'Cartão de Crédito',
+        'CARTAO_DEBITO': 'Cartão de Débito',
         'DINHEIRO': 'Dinheiro',
-        'INSVESTIMENTO': 'Investimento',
-
+        'INVESTIMENTO': 'Investimento',
     }
 
     const buscarDadosAPI = async () => {
@@ -65,9 +63,7 @@ export default function Contas() {
                 }
             });
 
-            if (resposta.ok) {
-                buscarDadosAPI();
-            }
+            if (resposta.ok) buscarDadosAPI();
 
         } catch (error) {
             console.error('Erro ao excluir:', error);
@@ -76,20 +72,18 @@ export default function Contas() {
 
     const exibirItemLista = (item) => {
         return (
-            <div key={item.id} className={Estilos.linhaListagem}>
+            <div key={item.id_conta} className={Estilos.linhaListagem}>
                 <div className='p-2 bg-cyan-100 text-cyan-600 rounded-full'>
-                    { }
-                    {/* <MdCreditCard className='w-6 h-6' /> */}
+                    { iconesTipoConta[item.tipo_conta] }
                 </div>
                 <div className='flex-1 ml-4'>
                     <p className='font-bold text-gray-800'>{item.nome}</p>
-                    <p className='text-sm text-gray-500'>{nomesTipoConta[item.tipo_conta]}</p>
+                    <p className='text-sm text-gray-500'>{ nomesTipoConta[item.tipo_conta] }</p>
                 </div>
                 <div className='flex items-center space-x-2'>
-                    <button className={Estilos.botaoAlterar}> <MdEdit className='h-6 w-6' /></button>
+                    <button className={Estilos.botaoAlterar} onClick={() => navigate('/cadcontas', { state: { itemAlterar: item } } )}> <MdEdit className='h-6 w-6' /></button>
                     <button className={Estilos.botaoExcluir} onClick={() => botaoExcluir(item.id_conta)} > <MdDelete className='h-6 w-6' /></button>
                 </div>
-
             </div>
         )
     }
@@ -109,10 +103,7 @@ export default function Contas() {
                 <section>
                     {dadosLista.map(item => exibirItemLista(item))}
                 </section>
-
             </section>
-
-
         </div>
     )
 }
