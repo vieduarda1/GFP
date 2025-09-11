@@ -3,13 +3,13 @@ import { BD } from '../db.js'
 
 class rotasSubCategorias {
     static async novoSubCategoria(req, res) {
-        const { nome, gasto_fixo, id_usuario } = req.body;
+        const { nome, gasto_fixo, id_categoria } = req.body;
 
         try {
             const categoria = await BD.query(`
-                    INSERT INTO categorias(nome, gasto_fixo,id_usuario)
+                    INSERT INTO categorias(nome, gasto_fixo,id_categoria)
                     VALUES($1, $2, $3,) RETURNING *`,
-                [nome, gasto_fixo, id_usuario])
+                [nome, gasto_fixo, id_categoria])
 
             res.status(201).json("subCategoria Cadastrada com sucesso✔")
         } catch (error) {
@@ -49,10 +49,10 @@ class rotasSubCategorias {
         }
     }
     static async consultarPorId(req, res) {
-        const { id_SubCategoria } = req.params;
+        const { id_categoria } = req.params;
         try {
-            const SubCategorias = await BD.query('SELECT * FROM SubCategorias WHERE id_subcategoria = $1', [id_SubCategoria])
-            res.status(200).json(SubCategorias.rows[0])
+            const SubCategorias = await BD.query('SELECT * FROM SubCategorias WHERE id_categoria = $1', [id_categoria])
+            res.status(200).json(SubCategorias.rows)
         } catch (error) {
             res.status(500).json({
                 message:
